@@ -1,0 +1,111 @@
+# 服务器配置
+server:
+  # 应用程序监听的端口号
+  port: 8080
+
+# Spring框架配置
+spring:
+  # 配置激活的环境（这里是开发环境）
+  profiles:
+    active: dev
+  # 主要配置
+  main:
+    # 允许循环引用（默认为false）
+    allow-circular-references: true
+  # 数据源配置（Druid数据库连接池）
+  datasource:
+    druid:
+      # 数据库驱动类名，从属性'repair.datasource.driver-class-name'中读取
+      driver-class-name: ${repair.datasource.driver-class-name}
+      # 数据库连接URL，根据变量构建
+      url: jdbc:mysql://${repair.datasource.host}:${repair.datasource.port}/${repair.datasource.database}?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+      # 数据库用户名和密码，分别从对应的环境变量读取
+      username: ${repair.datasource.username}
+      password: ${repair.datasource.password}
+  # Redis配置
+  redis:
+    # Redis服务器地址
+    host: ${repair.redis.host}
+    # Redis服务端口
+    port: ${repair.redis.port}
+    # Redis访问密码
+    password: ${repair.redis.password}
+    # Redis数据库索引号
+    database: ${repair.redis.database}
+
+## MyBatis配置
+#mybatis:
+#  # MyBatis映射文件的位置
+#  mapper-locations: classpath:mapper/*.xml
+#  # 自动扫描实体类包路径
+#  type-aliases-package: com.repair.entity
+#  # MyBatis全局配置
+#  configuration:
+#    # 开启驼峰命名规则映射
+#    map-underscore-to-camel-case: true
+mybatis-plus:
+  mapper-locations: "classpath*:/mapper/**/*.xml"   # Mapper.xml 文件地址，默认值【/**代表子目录也可以生效】
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl   # 配置日志，控制台输出sql语句
+    map-underscore-to-camel-case: true		# 是否开户下划线和驼峰的映射
+  global-config:
+    db-config:
+#      table-prefix: t_     # 配置MyBatis-Plus操作表的默认前缀
+      id-type: ASSIGN_ID # 配置MyBatis-Plus的主键策略
+  type-aliases-package: com.repair.entity # 配置MyBatis-Plus的类型别名所在的包，包扫描路径，可以采用默认的别名（类名，不区分大小写）
+
+# 日志级别配置
+logging:
+  level:
+    # 指定com.repair.mapper、com.repair.service、com.repair.controller包的日志输出级别
+    com:
+      repair:
+        mapper: debug
+        service: info
+        controller: info
+
+# 自定义配置项（例如：JWT、阿里云OSS、微信支付等）
+repair:
+  jwt:
+    # 用户相关的JWT配置
+    # 设置JWT签名加密时使用的密钥（管理员相关）
+    admin-secret-key: lzb
+    # 设置JWT过期时间（毫秒，管理员相关）
+    admin-ttl: 7200000
+    # 设置前端传递的JWT令牌名称（管理员相关）
+    admin-token-name: token
+
+  alioss:
+    # 阿里云OSS服务的终端节点
+    endpoint: ${repair.alioss.endpoint}
+    # 阿里云OSS访问ID
+    access-key-id: ${repair.alioss.access-key-id}
+    # 阿里云OSS访问密钥
+    access-key-secret: ${repair.alioss.access-key-secret}
+    # 阿里云OSS bucket名称
+    bucket-name: ${repair.alioss.bucket-name}
+  wechat:
+    # 微信公众平台AppID
+    appid: ${repair.wechat.appid}
+    # 微信公众平台AppSecret
+    secret: ${repair.wechat.secret}
+    # 微信支付商户号
+    mchid: ${repair.wechat.mchid}
+    # 商户API证书序列号
+    mchSerialNo: ${repair.wechat.mchSerialNo}
+    # 商户私钥文件路径
+    privateKeyFilePath: ${repair.wechat.privateKeyFilePath}
+    # 微信支付V3 API密钥
+    apiV3Key: ${repair.wechat.apiV3Key}
+    # 微信支付证书文件路径
+    weChatPayCertFilePath: ${repair.wechat.weChatPayCertFilePath}
+    # 微信支付通知回调URL
+    notifyUrl: ${repair.wechat.notifyUrl}
+    # 微信退款结果通知回调URL
+    refundNotifyUrl: ${repair.wechat.refundNotifyUrl}
+  shop:
+    # 店铺地址信息
+    address: ${repair.shop.address}
+  baidu:
+    # 百度地图API密钥
+    ak: ${repair.baidu.ak}
