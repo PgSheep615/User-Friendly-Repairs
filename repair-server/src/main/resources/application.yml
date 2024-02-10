@@ -69,11 +69,11 @@ repair:
   jwt:
     # 用户相关的JWT配置
     # 设置JWT签名加密时使用的密钥（管理员相关）
-    admin-secret-key: lzb
+    user-secret-key: lzb
     # 设置JWT过期时间（毫秒，管理员相关）
-    admin-ttl: 7200000
+    user-ttl: 7200000
     # 设置前端传递的JWT令牌名称（管理员相关）
-    admin-token-name: token
+    user-token-name: token
 
   alioss:
     # 阿里云OSS服务的终端节点

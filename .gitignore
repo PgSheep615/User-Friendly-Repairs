@@ -28,7 +28,7 @@ target/
 *.ipr
 *.properties
 bootstrap.yml
-application-dev.yml
+repair-server/src/main/resources/application-dev.yml
 *.txt
 ### NetBeans ###
 /nbproject/private/
