@@ -1,4 +1,4 @@
-package com.repair.mapper;
+package com.repair.interceptor.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.repair.entity.Admin;

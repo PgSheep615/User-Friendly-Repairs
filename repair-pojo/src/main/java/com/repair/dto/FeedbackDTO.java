@@ -3,6 +3,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+
 /**
  * @author LZB
  * @date 2024/1/26
@@ -12,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FeedbackDTO {
+public class FeedbackDTO implements Serializable {
 
     /**
      * 反馈问题情况

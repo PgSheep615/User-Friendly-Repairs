@@ -3,15 +3,19 @@ package com.repair.controller.order;
 import com.repair.dto.OrderModifyDTO;
 import com.repair.dto.OrderPageDTO;
 import com.repair.dto.OrderSubmitDTO;
+import com.repair.entity.RepairOrder;
 import com.repair.result.PageResult;
 import com.repair.result.Result;
 import com.repair.service.RepairOrderService;
-import com.repair.vo.OrderCommunityVO;
+import com.repair.vo.OrderHistoryVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,11 +47,10 @@ public class RepairOrderController {
         PageResult pageResult = repairOrderService.allPage(orderPageDTO);
         return Result.success(pageResult);
     }
-
-    @GetMapping("/")
-    @ApiOperation("查询用户历史订单")
+    @GetMapping("/historyOrder")
+    @ApiOperation("查询用户历史维修单")
     public Result<PageResult> userPage(OrderPageDTO orderPageDTO){
-        log.info("查询用户历史订单{}",orderPageDTO);
+        log.info("查询用户历史维修单{}",orderPageDTO);
         PageResult pageResult = repairOrderService.userPage(orderPageDTO);
         return Result.success(pageResult);
     }
@@ -65,7 +68,16 @@ public class RepairOrderController {
     //TODO @RequestParam
     public Result delete(@RequestParam("id") Long id){
         log.info("删除维修单{}",id);
-        repairOrderService.delete(id);
+        repairOrderService.deleteById(id);
         return Result.success();
+    }
+
+    @GetMapping("{id}")
+    @ApiOperation("根据id查询维修单详情")
+    public Result<OrderHistoryVO> getById(@PathVariable Long id){
+        RepairOrder order = repairOrderService.getById(id);
+        OrderHistoryVO orderHistoryVO = new OrderHistoryVO();
+        BeanUtils.copyProperties(order,orderHistoryVO);
+        return Result.success(orderHistoryVO);
     }
 }

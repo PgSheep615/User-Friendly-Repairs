@@ -14,9 +14,11 @@ import com.repair.service.FeedbackService;
 import com.repair.service.UserService;
 import com.repair.utils.JwtUtil;
 import com.repair.vo.UserLoginVO;
+import com.repair.vo.UserSearchVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -83,5 +85,14 @@ public class UserController {
         log.info("用户反馈{}",feedbackDTO);
         feedbackService.feedback(feedbackDTO);
         return Result.success();
+    }
+
+    @GetMapping("{id}")
+    @ApiOperation("根据用户id获取用户信息")
+    public Result<UserSearchVO> getById(@PathVariable Long id){
+        User user = userService.getById(id);
+        UserSearchVO userSearchVO = new UserSearchVO();
+        BeanUtils.copyProperties(user,userSearchVO);
+        return Result.success(userSearchVO);
     }
 }

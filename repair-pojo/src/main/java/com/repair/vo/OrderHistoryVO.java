@@ -1,22 +1,30 @@
-package com.repair.dto;
+package com.repair.vo;
 
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * @author LZB
- * @date 2024/1/18
+ * @date 2024/2/12
  * @Description
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderSubmitDTO implements Serializable {
+public class OrderHistoryVO implements Serializable {
+    /**
+     * 维修单ID，主键
+     */
+    private Long id;
+
+
     /**
      * 姓名
      */
@@ -51,6 +59,7 @@ public class OrderSubmitDTO implements Serializable {
      * 地址（精确到宿舍号）
      */
     private String address;
+
     /**
      * 电脑机型
      */
@@ -75,4 +84,14 @@ public class OrderSubmitDTO implements Serializable {
      * 故障情况图片，可以存储图片路径或序列化后的数据
      */
     private String faultImages;
+
+    /**
+     * 是否被接单，1表示已接单，0表示未接单
+     */
+    private Integer isAccepted;
+
+    /**
+     * 创建时间，自动填充当前时间
+     */
+    private LocalDateTime createTime;
 }

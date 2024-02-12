@@ -44,6 +44,13 @@ CREATE TABLE `repair_order`
 (
     `id`                   bigint      NOT NULL AUTO_INCREMENT COMMENT '维修单ID，主键',
     `user_id`              bigint     NOT NULL COMMENT '关联用户ID',
+    `name`              VARCHAR(50)           COMMENT '姓名',
+    `student_id`        VARCHAR(50)           COMMENT '学号',
+    `campus`            VARCHAR(50)           COMMENT '所在校区',
+    `department`        VARCHAR(100)          COMMENT '所在院系',
+    `phone_number`      VARCHAR(20)           COMMENT '手机长号',
+    `wechat_id`         VARCHAR(50)           DEFAULT NULL COMMENT '微信号',
+    `address`           VARCHAR(100)          COMMENT '地址（精确到宿舍号）',
     `computer_model`       VARCHAR(100) NOT NULL COMMENT '电脑机型',
     `computer_brand_model` VARCHAR(100) NOT NULL COMMENT '电脑品牌型号',
     `os_version`           VARCHAR(50)  NOT NULL COMMENT '操作系统版本',

@@ -5,13 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 /**
  * @author LZB
  * @date 2024/1/18
  * @Description
  */
 @Data
-public class OrderPageDTO {
+public class OrderPageDTO implements Serializable {
     //页码
     private Integer page;
 

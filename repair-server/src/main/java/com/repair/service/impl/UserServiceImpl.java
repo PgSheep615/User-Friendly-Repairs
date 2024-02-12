@@ -4,15 +4,11 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.repair.context.BaseContext;
-import com.repair.dto.FeedbackDTO;
 import com.repair.dto.UserLoginDTO;
 import com.repair.dto.UserModifyDTO;
-import com.repair.entity.Feedback;
 import com.repair.entity.User;
 import com.repair.exception.LoginFailedException;
-import com.repair.mapper.FeedbackMapper;
-import com.repair.mapper.UserMapper;
+import com.repair.interceptor.mapper.UserMapper;
 import com.repair.properties.WeChatProperties;
 import com.repair.service.UserService;
 import com.repair.utils.HttpClientUtil;
@@ -20,7 +16,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Wrapper;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -67,6 +62,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if(user==null){
             user = User.builder()
                     .createTime(LocalDateTime.now())
+                    .updateTime(LocalDateTime.now())
                     .openid(openid)
                     .build();
             userMapper.insert(user);
@@ -100,8 +96,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         BeanUtils.copyProperties(userModifyDTO,user);
         userMapper.updateById(user);
     }
-
-
 
 }
 

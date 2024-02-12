@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 /**
  * @author LZB
  * @date 2024/1/27
@@ -14,6 +16,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderAcceptDTO {
+public class OrderAcceptDTO implements Serializable {
     private Long id;
 }

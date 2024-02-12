@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.repair.context.BaseContext;
 import com.repair.dto.FeedbackDTO;
 import com.repair.entity.Feedback;
-import com.repair.mapper.FeedbackMapper;
+import com.repair.interceptor.mapper.FeedbackMapper;
 import com.repair.service.FeedbackService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;

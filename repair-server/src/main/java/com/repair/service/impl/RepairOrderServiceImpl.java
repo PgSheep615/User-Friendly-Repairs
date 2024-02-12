@@ -3,18 +3,18 @@ package com.repair.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fasterxml.jackson.databind.util.BeanUtil;
 import com.repair.context.BaseContext;
 import com.repair.dto.OrderModifyDTO;
 import com.repair.dto.OrderPageDTO;
 import com.repair.dto.OrderSubmitDTO;
 import com.repair.entity.RepairOrder;
 import com.repair.entity.User;
-import com.repair.mapper.RepairOrderMapper;
-import com.repair.mapper.UserMapper;
+import com.repair.interceptor.mapper.RepairOrderMapper;
+import com.repair.interceptor.mapper.UserMapper;
 import com.repair.result.PageResult;
 import com.repair.service.RepairOrderService;
 import com.repair.vo.OrderCommunityVO;
+import com.repair.vo.OrderHistoryVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,7 +61,9 @@ public class RepairOrderServiceImpl extends ServiceImpl<RepairOrderMapper, Repai
     public PageResult allPage(OrderPageDTO orderPageDTO) {
         //TODO 此处必须RepairOrder为泛型？
         Page<RepairOrder> page = new Page<>(orderPageDTO.getPage(), orderPageDTO.getPageSize());
-        repairOrderMapper.selectPage(page,null);
+        QueryWrapper<RepairOrder> queryWrapper = new QueryWrapper<RepairOrder>()
+                .orderByDesc("create_time");
+        repairOrderMapper.selectPage(page,queryWrapper);
         return myPageUtil(page);
     }
 
@@ -73,20 +75,24 @@ public class RepairOrderServiceImpl extends ServiceImpl<RepairOrderMapper, Repai
     public PageResult userPage(OrderPageDTO orderPageDTO) {
         Page<RepairOrder> page = new Page<>(orderPageDTO.getPage(), orderPageDTO.getPageSize());
         QueryWrapper<RepairOrder> queryWrapper = new QueryWrapper<RepairOrder>()
-                .eq("user_id",orderPageDTO.getId());
+                .eq("user_id",BaseContext.getCurrentId())
+                .orderByDesc("create_time"); // 按 create_time 降序排序
         repairOrderMapper.selectPage(page,queryWrapper);
-        return myPageUtil(page);
+        List<RepairOrder> records = page.getRecords();
+        List<OrderHistoryVO> list = new ArrayList<>();
+        for (RepairOrder record : records) {
+            OrderHistoryVO orderHistoryVO = new OrderHistoryVO();
+            BeanUtils.copyProperties(record, orderHistoryVO);
+            list.add(orderHistoryVO);
+        }
+        return new PageResult(page.getTotal(),list);
     }
 
     public PageResult myPageUtil(Page<RepairOrder> page){
         List<RepairOrder> records = page.getRecords();
         List<OrderCommunityVO> list = new ArrayList<>();
         for (RepairOrder record : records) {
-            User user = userMapper.selectById(record.getUserId());
-            OrderCommunityVO orderCommunityVO = OrderCommunityVO.builder()
-                    .name(user.getName())
-                    .address(user.getAddress())
-                    .build();
+            OrderCommunityVO orderCommunityVO = new OrderCommunityVO();
             BeanUtils.copyProperties(record, orderCommunityVO);
             list.add(orderCommunityVO);
         }
@@ -101,7 +107,7 @@ public class RepairOrderServiceImpl extends ServiceImpl<RepairOrderMapper, Repai
     public void modify(OrderModifyDTO orderModifyDTO) {
         RepairOrder repairOrder = new RepairOrder();
         BeanUtils.copyProperties(orderModifyDTO,repairOrder);
-        repairOrderMapper.updatePart(repairOrder);
+        repairOrderMapper.updateById(repairOrder);
     }
 
     /**
@@ -115,6 +121,11 @@ public class RepairOrderServiceImpl extends ServiceImpl<RepairOrderMapper, Repai
         repairOrder.setDeleteTime(LocalDateTime.now());
         repairOrder.setIsDeleted(1);
         repairOrderMapper.updateById(repairOrder);
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        repairOrderMapper.deleteById(id);
     }
 }
 

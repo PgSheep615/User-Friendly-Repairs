@@ -12,26 +12,19 @@ import com.repair.entity.Admin;
 import com.repair.entity.Feedback;
 import com.repair.entity.RepairOrder;
 import com.repair.entity.User;
-import com.repair.mapper.AdminMapper;
-import com.repair.mapper.FeedbackMapper;
-import com.repair.mapper.RepairOrderMapper;
-import com.repair.mapper.UserMapper;
+import com.repair.interceptor.mapper.AdminMapper;
+import com.repair.interceptor.mapper.FeedbackMapper;
+import com.repair.interceptor.mapper.RepairOrderMapper;
+import com.repair.interceptor.mapper.UserMapper;
 import com.repair.result.PageResult;
-import com.repair.result.Result;
 import com.repair.service.AdminService;
 import com.repair.vo.AdminSearchVO;
 import com.repair.vo.FeedbackSearchVO;
-import com.repair.vo.OrderCommunityVO;
 import com.repair.vo.UserSearchVO;
-import io.swagger.annotations.ApiOperation;
-import org.apache.el.parser.AstMinus;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import java.awt.geom.RectangularShape;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -168,8 +161,6 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
         }
         return new PageResult(page.getTotal(), list);
     }
-
-
 }
 
 
