@@ -57,6 +57,7 @@ public class RepairOrderController {
 
     @PutMapping("/modify")
     @ApiOperation("根据维修单id修改维修单信息")
+    @CacheEvict(cacheNames = "orderCache",key = "#orderModifyDTO.id")
     public Result modify(@RequestBody OrderModifyDTO orderModifyDTO){
         log.info("根据维修单id修改维修单信息{}",orderModifyDTO);
         repairOrderService.modify(orderModifyDTO);
@@ -65,6 +66,7 @@ public class RepairOrderController {
 
     @DeleteMapping("/delete")
     @ApiOperation("删除维修单")
+    @CacheEvict(cacheNames = "orderCache",key = "#id")
     //TODO @RequestParam
     public Result delete(@RequestParam("id") Long id){
         log.info("删除维修单{}",id);
@@ -74,6 +76,7 @@ public class RepairOrderController {
 
     @GetMapping("{id}")
     @ApiOperation("根据id查询维修单详情")
+    @Cacheable(cacheNames = "orderCache",key = "#id")
     public Result<OrderHistoryVO> getById(@PathVariable Long id){
         RepairOrder order = repairOrderService.getById(id);
         OrderHistoryVO orderHistoryVO = new OrderHistoryVO();

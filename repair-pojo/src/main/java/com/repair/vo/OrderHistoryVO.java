@@ -1,6 +1,8 @@
 package com.repair.vo;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,6 +24,7 @@ public class OrderHistoryVO implements Serializable {
     /**
      * 维修单ID，主键
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
 

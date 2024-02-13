@@ -32,7 +32,10 @@ spring:
     password: ${repair.redis.password}
     # Redis数据库索引号
     database: ${repair.redis.database}
-
+  servlet:
+    multipart:
+      max-file-size: 6MB
+      max-request-size: 6MB
 ## MyBatis配置
 #mybatis:
 #  # MyBatis映射文件的位置

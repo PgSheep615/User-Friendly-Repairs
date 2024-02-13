@@ -20,6 +20,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -73,6 +75,7 @@ public class UserController {
     }
     @PutMapping("/modify")
     @ApiOperation("修改用户信息")
+    @CacheEvict(cacheNames = "userCache",key = "#userModifyDTO.id")
     public Result modify(@RequestBody UserModifyDTO userModifyDTO){
         log.info("修改用户信息{}",userModifyDTO);
         userService.modify(userModifyDTO);
@@ -89,6 +92,7 @@ public class UserController {
 
     @GetMapping("{id}")
     @ApiOperation("根据用户id获取用户信息")
+    @Cacheable(cacheNames = "userCache",key = "#id")
     public Result<UserSearchVO> getById(@PathVariable Long id){
         User user = userService.getById(id);
         UserSearchVO userSearchVO = new UserSearchVO();
