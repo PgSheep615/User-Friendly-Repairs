@@ -12,10 +12,10 @@ import com.repair.entity.Admin;
 import com.repair.entity.Feedback;
 import com.repair.entity.RepairOrder;
 import com.repair.entity.User;
-import com.repair.interceptor.mapper.AdminMapper;
-import com.repair.interceptor.mapper.FeedbackMapper;
-import com.repair.interceptor.mapper.RepairOrderMapper;
-import com.repair.interceptor.mapper.UserMapper;
+import com.repair.mapper.AdminMapper;
+import com.repair.mapper.FeedbackMapper;
+import com.repair.mapper.RepairOrderMapper;
+import com.repair.mapper.UserMapper;
 import com.repair.result.PageResult;
 import com.repair.service.AdminService;
 import com.repair.vo.AdminSearchVO;
@@ -27,7 +27,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
 * @author LZB
@@ -58,7 +60,14 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
                 .updateUser(BaseContext.getCurrentId())
                 .build();
         BeanUtils.copyProperties(adminAddDTO,admin);
-        adminMapper.insert(admin);
+        Long AdminId = adminMapper.selectByUserId(adminAddDTO.getUserId());
+        if (AdminId == null){
+            adminMapper.insert(admin);
+        }else{
+            Admin exitsAdmin = new Admin();
+            exitsAdmin.setId(AdminId);
+            adminMapper.updateByUserId(exitsAdmin);
+        }
     }
 
     /**
@@ -68,7 +77,9 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
      */
     public PageResult pageAdmin(AdminSearchPageDTO adminSearchPageDTO) {
         Page<Admin> page = new Page<>(adminSearchPageDTO.getPage(),adminSearchPageDTO.getPageSize());
-        adminMapper.selectPage(page,null);
+        QueryWrapper<Admin> queryWrapper = new QueryWrapper<Admin>()
+                .orderByDesc("create_time");
+        adminMapper.selectPage(page,queryWrapper);
         List<Admin> records = page.getRecords();
         List<AdminSearchVO> list = new ArrayList<>();
         for (Admin record : records) {
@@ -104,7 +115,9 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
      */
     public PageResult pageFeedback(FeedbackSearchPageDTO feedbackSearchPageDTO) {
         Page<Feedback> page = new Page<>(feedbackSearchPageDTO.getPage(), feedbackSearchPageDTO.getPageSize());
-        feedbackMapper.selectPage(page,null);
+        QueryWrapper<Feedback> queryWrapper = new QueryWrapper<Feedback>()
+                .orderByDesc("create_time");
+        feedbackMapper.selectPage(page,queryWrapper);
         List<Feedback> records = page.getRecords();
         List<FeedbackSearchVO> list = new ArrayList<>();
         for (Feedback record : records) {

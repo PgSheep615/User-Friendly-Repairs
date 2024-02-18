@@ -8,13 +8,12 @@ import com.repair.dto.UserLoginDTO;
 import com.repair.dto.UserModifyDTO;
 import com.repair.entity.User;
 import com.repair.exception.LoginFailedException;
-import com.repair.interceptor.mapper.UserMapper;
+import com.repair.mapper.UserMapper;
 import com.repair.properties.WeChatProperties;
 import com.repair.service.UserService;
 import com.repair.utils.HttpClientUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CachePut;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

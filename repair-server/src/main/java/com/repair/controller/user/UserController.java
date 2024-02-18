@@ -75,7 +75,7 @@ public class UserController {
     }
     @PutMapping("/modify")
     @ApiOperation("修改用户信息")
-    @CacheEvict(cacheNames = "userCache",key = "#userModifyDTO.id")
+    //@CacheEvict(cacheNames = "userCache",key = "#userModifyDTO.id")
     public Result modify(@RequestBody UserModifyDTO userModifyDTO){
         log.info("修改用户信息{}",userModifyDTO);
         userService.modify(userModifyDTO);
@@ -92,7 +92,7 @@ public class UserController {
 
     @GetMapping("{id}")
     @ApiOperation("根据用户id获取用户信息")
-    @Cacheable(cacheNames = "userCache",key = "#id")
+    //@Cacheable(cacheNames = "userCache",key = "#id")
     public Result<UserSearchVO> getById(@PathVariable Long id){
         User user = userService.getById(id);
         UserSearchVO userSearchVO = new UserSearchVO();

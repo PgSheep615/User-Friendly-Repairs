@@ -72,7 +72,7 @@ repair:
   jwt:
     # 用户相关的JWT配置
     # 设置JWT签名加密时使用的密钥（管理员相关）
-    user-secret-key: lzb
+    user-secret-key: LZB
     # 设置JWT过期时间（毫秒，管理员相关）
     user-ttl: 7200000
     # 设置前端传递的JWT令牌名称（管理员相关）
