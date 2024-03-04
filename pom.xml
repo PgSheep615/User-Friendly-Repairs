@@ -46,6 +46,9 @@
                 <version>${lombok}</version>
             </dependency>
 
+
+
+
             <dependency>
                 <groupId>com.alibaba</groupId>
                 <artifactId>fastjson</artifactId>
@@ -123,6 +126,16 @@
                 <artifactId>wechatpay-apache-httpclient</artifactId>
                 <version>0.4.8</version>
             </dependency>
+
+
+
+            <!--fastjson依赖-->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>1.2.33</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 </project>

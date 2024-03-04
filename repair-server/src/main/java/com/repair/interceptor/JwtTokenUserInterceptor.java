@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * jwt令牌校验的拦截器
  */
+/*
 @Component
 @Slf4j
 public class JwtTokenUserInterceptor implements HandlerInterceptor {
@@ -24,7 +25,8 @@ public class JwtTokenUserInterceptor implements HandlerInterceptor {
     @Autowired
     private JwtProperties jwtProperties;
 
-    /**
+    */
+/**
      * 校验jwt
      *
      * @param request
@@ -32,7 +34,8 @@ public class JwtTokenUserInterceptor implements HandlerInterceptor {
      * @param handler
      * @return
      * @throws Exception
-     */
+     *//*
+
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         //判断当前拦截到的是Controller的方法还是其他资源
         if (!(handler instanceof HandlerMethod)) {
@@ -58,4 +61,4 @@ public class JwtTokenUserInterceptor implements HandlerInterceptor {
             return false;
         }
     }
-}
+}*/

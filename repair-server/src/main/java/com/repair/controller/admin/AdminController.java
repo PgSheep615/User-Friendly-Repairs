@@ -8,6 +8,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,6 +31,7 @@ public class AdminController {
 
     @PostMapping("/add")
     @ApiOperation("添加管理员")
+    @PreAuthorize("hasAuthority('admin')")
     public Result add(@RequestBody AdminAddDTO adminAddDTO){
         log.info("添加管理员:{}",adminAddDTO);
         adminService.add(adminAddDTO);
@@ -38,6 +40,7 @@ public class AdminController {
 
     @GetMapping("/searchAdmin")
     @ApiOperation("查询所有管理员")
+    @PreAuthorize("hasAuthority('admin')")
     public Result<PageResult> pageAdmin(AdminSearchPageDTO adminSearchPageDTO){
         log.info("查询所有管理员:{}",adminSearchPageDTO);
         PageResult pageResult = adminService.pageAdmin(adminSearchPageDTO);
@@ -46,6 +49,7 @@ public class AdminController {
 
     @DeleteMapping("/deleteAdmin")
     @ApiOperation("删除管理员")
+    @PreAuthorize("hasAuthority('admin')")
     public Result deleteAdmin(@RequestParam("id") Long id){
         log.info("删除管理员:{}",id);
         adminService.deleteAdmin(id);
@@ -54,6 +58,7 @@ public class AdminController {
 
     @GetMapping("/feedback")
     @ApiOperation("查询所有反馈")
+    @PreAuthorize("hasAuthority('admin')")
     public Result<PageResult> pageFeedback(FeedbackSearchPageDTO feedbackSearchPageDTO){
         log.info("查询所有反馈:{}",feedbackSearchPageDTO);
         PageResult pageResult =  adminService.pageFeedback(feedbackSearchPageDTO);
@@ -62,6 +67,7 @@ public class AdminController {
 
     @PutMapping("/accept")
     @ApiOperation("接单")
+    @PreAuthorize("hasAuthority('admin')")
     public Result accept(@RequestBody OrderAcceptDTO orderAcceptDTO){
         log.info("接单{}",orderAcceptDTO);
         adminService.accept(orderAcceptDTO.getId());
@@ -70,6 +76,7 @@ public class AdminController {
 
     @DeleteMapping("/deleteUser")
     @ApiOperation("删除用户")
+    @PreAuthorize("hasAuthority('admin')")
     public Result deleteUser(@RequestParam("id") Long id){
         log.info("删除用户:{}",id);
         adminService.deleteUser(id);
@@ -78,6 +85,7 @@ public class AdminController {
 
     @GetMapping("/searchUser")
     @ApiOperation("分页查询所有用户")
+    @PreAuthorize("hasAuthority('admin')")
     public Result<PageResult> pageUser(UserSearchPageDTO userSearchPageDTO){
         log.info("分页查询所有用户");
         PageResult pageResult =  adminService.pageUser(userSearchPageDTO);

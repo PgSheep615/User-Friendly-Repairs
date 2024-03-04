@@ -1,7 +1,6 @@
 package com.repair.config;
 
-import com.repair.interceptor.JwtTokenAdminInterceptor;
-import com.repair.interceptor.JwtTokenUserInterceptor;
+
 import com.repair.json.JacksonObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +27,11 @@ import java.util.List;
 @Slf4j
 public class WebMvcConfiguration extends WebMvcConfigurationSupport {
 
-    @Autowired
+    /*@Autowired
     private JwtTokenAdminInterceptor jwtTokenAdminInterceptor;
 
     @Autowired
-    private JwtTokenUserInterceptor jwtTokenUserInterceptor;
+    private JwtTokenUserInterceptor jwtTokenUserInterceptor;*/
 
     /**
      * 注册自定义拦截器
@@ -40,7 +39,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
      * @param registry
      */
     protected void addInterceptors(InterceptorRegistry registry) {
-        log.info("开始注册自定义拦截器...");
+        /*log.info("开始注册自定义拦截器...");
         registry.addInterceptor(jwtTokenAdminInterceptor)
                 .addPathPatterns("/admin/**")
                 .excludePathPatterns("/admin/employee/login");
@@ -48,7 +47,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
         registry.addInterceptor(jwtTokenUserInterceptor)
                 .addPathPatterns("/user/**")
                 .excludePathPatterns("/user/user/login")
-                .excludePathPatterns("/user/shop/status");
+                .excludePathPatterns("/user/shop/status");*/
 
     }
 
@@ -111,6 +110,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
 
     /**
      * 设置静态资源映射
+     * 防止@EnableMvc把静态资源覆盖了
      * @param registry
      */
     @Override

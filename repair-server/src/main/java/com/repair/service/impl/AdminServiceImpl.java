@@ -3,11 +3,10 @@ package com.repair.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fasterxml.jackson.databind.util.BeanUtil;
+import com.repair.constant.RedisConstant;
 import com.repair.context.BaseContext;
-import com.repair.dto.AdminAddDTO;
-import com.repair.dto.AdminSearchPageDTO;
-import com.repair.dto.FeedbackSearchPageDTO;
-import com.repair.dto.UserSearchPageDTO;
+import com.repair.dto.*;
 import com.repair.entity.Admin;
 import com.repair.entity.Feedback;
 import com.repair.entity.RepairOrder;
@@ -18,6 +17,7 @@ import com.repair.mapper.RepairOrderMapper;
 import com.repair.mapper.UserMapper;
 import com.repair.result.PageResult;
 import com.repair.service.AdminService;
+import com.repair.util.RedisCache;
 import com.repair.vo.AdminSearchVO;
 import com.repair.vo.FeedbackSearchVO;
 import com.repair.vo.UserSearchVO;
@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
 * @author LZB
@@ -48,6 +49,23 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
     private FeedbackMapper feedbackMapper;
     @Autowired
     private RepairOrderMapper repairOrderMapper;
+    @Autowired
+    private RedisCache redisCache;
+
+    /**
+     * 修改reids的用户权限信息
+     */
+    private void setRedisPermissions(Long userId,String permissions){
+        String key = RedisConstant.RedisGlobalKey + userId;
+        LoginUser loginUser = redisCache.getCacheObject(key);
+        redisCache.deleteObject(key);
+        List<String> permissionsList = new ArrayList<>();
+        permissionsList.add(permissions);
+        loginUser.setPermissions(permissionsList);
+        redisCache.setCacheObject(key,loginUser,1, TimeUnit.DAYS);
+    }
+
+
     /**
      * 添加管理员
      * @param adminAddDTO
@@ -65,9 +83,11 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
             adminMapper.insert(admin);
         }else{
             Admin exitsAdmin = new Admin();
+            BeanUtils.copyProperties(adminAddDTO,exitsAdmin);
             exitsAdmin.setId(AdminId);
-            adminMapper.updateByUserId(exitsAdmin);
+            adminMapper.addMyAdminById(exitsAdmin);
         }
+        setRedisPermissions(adminAddDTO.getUserId(),"admin");
     }
 
     /**
@@ -106,6 +126,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
         admin.setUpdateUser(BaseContext.getCurrentId());
         adminMapper.updateById(admin);
         adminMapper.deleteById(id);
+        setRedisPermissions(admin.getUserId(),"user");
     }
 
     /**
@@ -156,6 +177,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
         user.setUpdateUser(BaseContext.getCurrentId());
         user.setDeleteTime(LocalDateTime.now());
         userMapper.deleteById(id);
+        redisCache.deleteObject(RedisConstant.RedisGlobalKey + user.getId());
     }
 
     /**

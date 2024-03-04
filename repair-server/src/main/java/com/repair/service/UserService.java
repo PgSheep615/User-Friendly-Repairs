@@ -5,6 +5,7 @@ import com.repair.dto.FeedbackDTO;
 import com.repair.dto.UserLoginDTO;
 import com.repair.dto.UserModifyDTO;
 import com.repair.entity.User;
+import com.repair.vo.UserLoginVO;
 
 /**
 * @author LZB
@@ -17,7 +18,7 @@ public interface UserService extends IService<User> {
      * 微信用户登录
      * @return
      */
-    User wxLogin(UserLoginDTO userLoginDTO);
+    UserLoginVO wxLogin(UserLoginDTO userLoginDTO);
 
     /**
      * 修改用户个人信息

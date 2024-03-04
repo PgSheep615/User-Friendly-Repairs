@@ -4,21 +4,34 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.repair.constant.JwtClaimsConstant;
+import com.repair.constant.RedisConstant;
+import com.repair.dto.LoginUser;
 import com.repair.dto.UserLoginDTO;
 import com.repair.dto.UserModifyDTO;
+import com.repair.entity.Admin;
 import com.repair.entity.User;
 import com.repair.exception.LoginFailedException;
 import com.repair.mapper.UserMapper;
+import com.repair.properties.JwtProperties;
 import com.repair.properties.WeChatProperties;
+import com.repair.service.AdminService;
 import com.repair.service.UserService;
+import com.repair.util.RedisCache;
 import com.repair.utils.HttpClientUtil;
+import com.repair.utils.JwtUtil;
+import com.repair.vo.UserLoginVO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
 * @author LZB
@@ -26,6 +39,7 @@ import java.util.Map;
 * @createDate 2024-01-18 17:05:54
 */
 @Service
+@Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService{
 
     private final String url = "https://api.weixin.qq.com/sns/jscode2session";
@@ -36,6 +50,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private AdminService adminService;
+
+    @Autowired
+    private JwtProperties jwtProperties;
+
+    @Autowired
+    private RedisCache redisCache;
+
 
 
 
@@ -45,7 +68,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
      * @return
      */
     @Override
-    public User wxLogin(UserLoginDTO userLoginDTO) {
+    public UserLoginVO wxLogin(UserLoginDTO userLoginDTO) {
         String openid = getOpenid(userLoginDTO.getCode());
 
         if(openid == null|| openid.equals("")){
@@ -67,9 +90,48 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                     .build();
             userMapper.insert(user);
         }
+
+        //为微信用户生成jwt令牌
+        Map<String, Object> claim = new HashMap<>();
+        claim.put(JwtClaimsConstant.USER_ID,user.getId());
+        String token = JwtUtil.createJWT(jwtProperties.getUserSecretKey(),jwtProperties.getUserTtl(),claim);
+        log.info("jwt&token:{}",token);
+        Integer isAdmin = 0;
+        Admin admin = adminService.getOne(new QueryWrapper<Admin>().eq("user_id", user.getId()));
+        List<String> permissions = new ArrayList<>();
+        if(admin != null){
+            isAdmin = 1;
+            permissions.add("admin");
+
+        }else{
+            permissions.add("user");
+
+        }
+        UserLoginVO userLoginVO = UserLoginVO.builder()
+                .id(user.getId())
+                .openid(user.getOpenid())
+                .token(token)
+                .isAdmin(isAdmin)
+                .build();
+        // 把全部数据封装为LoginUser存入redis  方便后续权限的管理
+        LoginUser loginUser = new LoginUser(user,permissions);
+
+        //封装权限
+        String key = RedisConstant.RedisGlobalKey +user.getId();
+        redisCache.setCacheObject(key,loginUser,1,TimeUnit.DAYS);
+
         //返回这个用户对象
-        return user;
+        return userLoginVO;
     }
+
+    /*private LoginUser createLoginUser(User user) {
+        List<String> permissions = new ArrayList<>();
+        permissions.add(user.getPermission());
+        String openid = user.getOpenid();
+        user = new User();
+        user.setOpenid(openid);
+        return new LoginUser(user, permissions);
+    }*/
 
     private String getOpenid(String code){
         //调用微信接口服务，获取当前微信的openid

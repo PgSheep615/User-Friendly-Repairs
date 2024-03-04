@@ -22,6 +22,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -35,13 +36,10 @@ public class UserController {
 
     @Autowired
     private UserService userService;
-    @Autowired
-    private AdminService adminService;
+
     @Autowired
     private FeedbackService feedbackService;
 
-    @Autowired
-    private JwtProperties jwtProperties;
 
     /**
      * 微信用户登录
@@ -53,29 +51,15 @@ public class UserController {
     public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO){
         log.info("微信登陆{}",userLoginDTO.getCode());
 
-        User user = userService.wxLogin(userLoginDTO);
+        UserLoginVO userLoginVO = userService.wxLogin(userLoginDTO);
 
-        //为微信用户生成jwt令牌
-        Map<String, Object> claim = new HashMap<>();
-        claim.put(JwtClaimsConstant.USER_ID,user.getId());
-        String token = JwtUtil.createJWT(jwtProperties.getUserSecretKey(),jwtProperties.getUserTtl(),claim);
-        log.info("jwt&token:{}",token);
-        Integer isAdmin = 0;
-        Admin admin = adminService.getOne(new QueryWrapper<Admin>().eq("user_id", user.getId()));
-        if(admin != null){
-            isAdmin = 1;
-        }
-        UserLoginVO userLoginVO = UserLoginVO.builder()
-                .id(user.getId())
-                .openid(user.getOpenid())
-                .token(token)
-                .isAdmin(isAdmin)
-                .build();
+
         return Result.success(userLoginVO);
     }
     @PutMapping("/modify")
     @ApiOperation("修改用户信息")
-    //@CacheEvict(cacheNames = "userCache",key = "#userModifyDTO.id")
+    @PreAuthorize("hasAnyAuthority('user','admin')")
+    @CacheEvict(cacheNames = "userCache",key = "#userModifyDTO.id")
     public Result modify(@RequestBody UserModifyDTO userModifyDTO){
         log.info("修改用户信息{}",userModifyDTO);
         userService.modify(userModifyDTO);
@@ -84,6 +68,7 @@ public class UserController {
 
     @PostMapping("/feedback")
     @ApiOperation("提交用户反馈")
+    @PreAuthorize("hasAnyAuthority('user','admin')")
     public Result feedback(@RequestBody FeedbackDTO feedbackDTO){
         log.info("用户反馈{}",feedbackDTO);
         feedbackService.feedback(feedbackDTO);
@@ -92,7 +77,8 @@ public class UserController {
 
     @GetMapping("{id}")
     @ApiOperation("根据用户id获取用户信息")
-    //@Cacheable(cacheNames = "userCache",key = "#id")
+    @Cacheable(cacheNames = "userCache",key = "#id")
+    @PreAuthorize("hasAnyAuthority('user','admin')")
     public Result<UserSearchVO> getById(@PathVariable Long id){
         User user = userService.getById(id);
         UserSearchVO userSearchVO = new UserSearchVO();

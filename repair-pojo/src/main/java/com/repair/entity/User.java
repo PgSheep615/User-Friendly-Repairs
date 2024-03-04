@@ -36,6 +36,11 @@ public class User implements Serializable {
      * 姓名
      */
     private String name;
+    /**
+     * 密码
+     */
+    @TableField(exist = false)
+    private String password;
 
     /**
      * 学号

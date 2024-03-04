@@ -16,12 +16,12 @@ import org.apache.ibatis.annotations.Update;
 */
 @Mapper
 public interface AdminMapper extends BaseMapper<Admin> {
-    @Select("select * from admin where user_id = #{userId}")
+    @Select("select id from admin where user_id = #{userId}")
     public Long selectByUserId(Long userId);
 
     @AutoFill(OperationType.UPDATE)
-    @Update("update admin set is_deleted = 0 where id = #{id}")
-    void updateByUserId(Admin admin);
+    @Update("update admin set is_deleted = 0 , group_name = #{groupName} where id = #{id}")
+    void addMyAdminById(Admin admin);
 }
 
 
