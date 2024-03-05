@@ -22,6 +22,9 @@ public interface AdminMapper extends BaseMapper<Admin> {
     @AutoFill(OperationType.UPDATE)
     @Update("update admin set is_deleted = 0 , group_name = #{groupName} where id = #{id}")
     void addMyAdminById(Admin admin);
+
+    @Select("select * from admin where is_deleted = 0 limit #{random},1 ;")
+    Admin selectByRandom(Long random);
 }
 
 

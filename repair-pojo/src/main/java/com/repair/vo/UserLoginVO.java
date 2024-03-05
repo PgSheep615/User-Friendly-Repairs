@@ -17,6 +17,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserLoginVO implements Serializable {
+    private static final long serialVersionUID = 6L;
+
 
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;

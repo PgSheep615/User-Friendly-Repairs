@@ -16,11 +16,11 @@ import com.repair.result.PageResult;
 public interface RepairOrderService extends IService<RepairOrder> {
 
     /**
-     * 提交维修单
+     * 提交维修单并随机分配给管理员
      * @param orderSubmitDTO
      * @return
      */
-    Long submit(OrderSubmitDTO orderSubmitDTO);
+    Long submitAndAccepted(OrderSubmitDTO orderSubmitDTO);
 
     /**
      * 分类查询所有用户的历史维修单

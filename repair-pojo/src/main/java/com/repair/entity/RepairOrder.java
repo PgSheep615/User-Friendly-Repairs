@@ -98,6 +98,11 @@ public class RepairOrder implements Serializable {
     private Integer isAccepted;
 
     /**
+     * 接单者ID
+     */
+    private Long accpetedUser;
+
+    /**
      * 创建时间，自动填充当前时间
      */
     private LocalDateTime createTime;
@@ -135,5 +140,5 @@ public class RepairOrder implements Serializable {
     private Integer version;
 
     @TableField(exist = false)
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 6L;
 }

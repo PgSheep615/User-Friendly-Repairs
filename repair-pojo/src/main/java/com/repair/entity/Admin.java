@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Admin implements Serializable {
+
     /**
      * 管理员ID，主键
      */
@@ -75,5 +76,5 @@ public class Admin implements Serializable {
     private Integer version;
 
     @TableField(exist = false)
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 6L;
 }

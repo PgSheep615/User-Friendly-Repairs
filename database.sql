@@ -57,6 +57,7 @@ CREATE TABLE `repair_order`
     `fault_description`    TEXT         NOT NULL COMMENT '详细描述故障问题情况',
     `fault_images`         varchar(255) COMMENT '故障情况图片，可以存储图片路径或序列化后的数据',
     `is_accepted`          TINYINT(1)   NOT NULL DEFAULT 0 COMMENT '是否被接单，1表示已接单，0表示未接单',
+    `accpeted_user`  bigint               DEFAULT NULL COMMENT '接单者ID',
     `create_time` DATETIME             DEFAULT NULL COMMENT '创建时间，自动填充当前时间',
     `update_time` DATETIME             DEFAULT NULL  COMMENT '修改时间，每次更新时自动更新为当前时间',
     `create_user` bigint               DEFAULT NULL COMMENT '创建者ID',

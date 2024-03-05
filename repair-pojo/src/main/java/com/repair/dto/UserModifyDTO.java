@@ -18,6 +18,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserModifyDTO implements Serializable {
+    private static final long serialVersionUID = 6L;
+
     /**
      * 用户ID，主键
      */

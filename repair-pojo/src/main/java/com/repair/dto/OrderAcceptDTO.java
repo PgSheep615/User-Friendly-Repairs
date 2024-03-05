@@ -17,5 +17,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderAcceptDTO implements Serializable {
+    private static final long serialVersionUID = 6L;
+
     private Long id;
 }

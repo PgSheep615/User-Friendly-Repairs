@@ -15,6 +15,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderModifyDTO implements Serializable {
+    private static final long serialVersionUID = 6L;
+
     /**
      * 维修单ID，主键
      */

@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("user/admin")
 @Slf4j
 @Api(tags = "管理员相关接口")
-@EnableTransactionManagement       //开启事务注解
 public class AdminController {
 
     @Autowired
@@ -91,4 +90,8 @@ public class AdminController {
         PageResult pageResult =  adminService.pageUser(userSearchPageDTO);
         return Result.success(pageResult);
     }
+
+    //TODO 查询管理员所被分配的维修单
+
+
 }

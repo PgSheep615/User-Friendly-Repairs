@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.databind.util.BeanUtil;
+import com.repair.constant.AdminCountConstant;
 import com.repair.constant.RedisConstant;
 import com.repair.context.BaseContext;
 import com.repair.dto.*;
@@ -24,6 +25,7 @@ import com.repair.vo.UserSearchVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -55,7 +57,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
     /**
      * 修改reids的用户权限信息
      */
-    private void setRedisPermissions(Long userId,String permissions){
+    private void alterRedisPermissions(Long userId,String permissions){
         String key = RedisConstant.RedisGlobalKey + userId;
         LoginUser loginUser = redisCache.getCacheObject(key);
         redisCache.deleteObject(key);
@@ -65,11 +67,23 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
         redisCache.setCacheObject(key,loginUser,1, TimeUnit.DAYS);
     }
 
+    private void add1RedisAdminCount(boolean add){
+        Long adminCount = redisCache.getCacheObject(AdminCountConstant.AdminCount);
+        redisCache.deleteObject(AdminCountConstant.AdminCount);
+        if(add){
+            redisCache.setCacheObject(AdminCountConstant.AdminCount,adminCount+1,1, TimeUnit.DAYS);
+        }else{
+            redisCache.setCacheObject(AdminCountConstant.AdminCount,adminCount-1,1, TimeUnit.DAYS);
+
+        }
+    }
+
 
     /**
      * 添加管理员
      * @param adminAddDTO
      */
+    @Transactional
     public void add(AdminAddDTO adminAddDTO) {
         Admin admin = Admin.builder()
                 .createTime(LocalDateTime.now())
@@ -87,7 +101,8 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
             exitsAdmin.setId(AdminId);
             adminMapper.addMyAdminById(exitsAdmin);
         }
-        setRedisPermissions(adminAddDTO.getUserId(),"admin");
+        add1RedisAdminCount(true);
+        alterRedisPermissions(adminAddDTO.getUserId(),"admin");
     }
 
     /**
@@ -119,6 +134,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
      * 删除管理员
      * @param id
      */
+    @Transactional
     public void deleteAdmin(Long id) {
         Admin admin = adminMapper.selectById(id);
         admin.setDeleteTime(LocalDateTime.now());
@@ -126,7 +142,8 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
         admin.setUpdateUser(BaseContext.getCurrentId());
         adminMapper.updateById(admin);
         adminMapper.deleteById(id);
-        setRedisPermissions(admin.getUserId(),"user");
+        add1RedisAdminCount(false);
+        alterRedisPermissions(admin.getUserId(),"user");
     }
 
     /**
@@ -134,6 +151,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
      * @param feedbackSearchPageDTO
      * @return
      */
+    @Transactional
     public PageResult pageFeedback(FeedbackSearchPageDTO feedbackSearchPageDTO) {
         Page<Feedback> page = new Page<>(feedbackSearchPageDTO.getPage(), feedbackSearchPageDTO.getPageSize());
         QueryWrapper<Feedback> queryWrapper = new QueryWrapper<Feedback>()
@@ -157,9 +175,13 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
      * 接单
      * @param id
      */
+    //TODO 标记接单的人
     public void accept(Long id) {
         RepairOrder repairOrder = repairOrderMapper.selectById(id);
         repairOrder.setIsAccepted(1);
+        repairOrder.setUpdateUser(BaseContext.getCurrentId());
+        repairOrder.setUpdateTime(LocalDateTime.now());
+        repairOrder.setAccpetedUser(BaseContext.getCurrentId());
         repairOrderMapper.updateById(repairOrder);
     }
 
@@ -167,6 +189,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
      * 删除用户
      * @param id
      */
+    @Transactional
     public void deleteUser(Long id) {
         Admin admin = adminMapper.selectOne(new QueryWrapper<Admin>().eq("user_id", id));
         if(admin != null) {

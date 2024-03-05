@@ -3,24 +3,33 @@ package com.repair.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.math.LongMath;
+import com.repair.constant.AdminCountConstant;
+import com.repair.constant.RepairOrderAcceptedConstant;
 import com.repair.context.BaseContext;
 import com.repair.dto.OrderModifyDTO;
 import com.repair.dto.OrderPageDTO;
 import com.repair.dto.OrderSubmitDTO;
+import com.repair.entity.Admin;
 import com.repair.entity.RepairOrder;
+import com.repair.mapper.AdminMapper;
 import com.repair.mapper.RepairOrderMapper;
 import com.repair.mapper.UserMapper;
 import com.repair.result.PageResult;
 import com.repair.service.RepairOrderService;
+import com.repair.util.RedisCache;
 import com.repair.vo.OrderCommunityVO;
 import com.repair.vo.OrderHistoryVO;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
 * @author LZB
@@ -34,18 +43,40 @@ public class RepairOrderServiceImpl extends ServiceImpl<RepairOrderMapper, Repai
     private UserMapper userMapper;
     @Autowired
     private RepairOrderMapper repairOrderMapper;
+    @Autowired
+    private RedisCache redisCache;
+    @Autowired
+    private AdminMapper adminMapper;
+
     /**
-     * 提交维修单
+     * 提交维修单并随机分配给管理员
      * @param orderSubmitDTO
      * @return
      */
-    public Long submit(OrderSubmitDTO orderSubmitDTO) {
+    @Transactional
+    public Long submitAndAccepted(OrderSubmitDTO orderSubmitDTO) {
+        Long admincount = redisCache.getCacheObject(AdminCountConstant.AdminCount);
+        if(admincount == null){
+            admincount = adminMapper.selectCount(null);
+            redisCache.setCacheObject(AdminCountConstant.AdminCount,admincount);
+        }
+        Long random = 0L;
+        if(admincount > 0) {
+            random = ThreadLocalRandom.current().nextLong(admincount);
+        }
+        Admin admin = adminMapper.selectByRandom(random);
+        Long userId = null;
+        if(admin != null){
+            userId = admin.getUserId();
+        }
         RepairOrder repairOrder = RepairOrder.builder()
                 .userId(BaseContext.getCurrentId())
                 .createTime(LocalDateTime.now())
                 .createUser(BaseContext.getCurrentId())
                 .updateTime(LocalDateTime.now())
                 .updateUser(BaseContext.getCurrentId())
+                .isAccepted(RepairOrderAcceptedConstant.Accepted)
+                .accpetedUser(userId)
                 .build();
         BeanUtils.copyProperties(orderSubmitDTO, repairOrder);
         repairOrderMapper.insert(repairOrder);
@@ -106,6 +137,8 @@ public class RepairOrderServiceImpl extends ServiceImpl<RepairOrderMapper, Repai
     public void modify(OrderModifyDTO orderModifyDTO) {
         RepairOrder repairOrder = new RepairOrder();
         BeanUtils.copyProperties(orderModifyDTO,repairOrder);
+        repairOrder.setUpdateTime(LocalDateTime.now());
+        repairOrder.setUpdateUser(BaseContext.getCurrentId());
         repairOrderMapper.updateById(repairOrder);
     }
 
@@ -113,6 +146,7 @@ public class RepairOrderServiceImpl extends ServiceImpl<RepairOrderMapper, Repai
      * 删除维修单
      * @param id
      */
+    @Transactional
     public void delete(Long id) {
         RepairOrder repairOrder = repairOrderMapper.selectById(id);
         repairOrder.setUpdateUser(BaseContext.getCurrentId());

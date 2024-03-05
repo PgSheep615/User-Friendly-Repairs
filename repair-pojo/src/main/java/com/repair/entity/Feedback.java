@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Feedback implements Serializable {
+
     /**
      * 反馈表ID，主键
      */
@@ -75,5 +76,5 @@ public class Feedback implements Serializable {
     private Integer version;
 
     @TableField(exist = false)
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 6L;
 }

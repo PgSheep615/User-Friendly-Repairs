@@ -17,6 +17,9 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AdminSearchPageDTO implements Serializable {
+    private static final long serialVersionUID = 6L;
+
+
     //页码
     private int page;
 

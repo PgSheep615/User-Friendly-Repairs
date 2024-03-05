@@ -21,6 +21,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AdminSearchVO implements Serializable {
+    private static final long serialVersionUID = 6L;
+
     /**
      * 管理员ID，主键
      */

@@ -17,6 +17,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderSubmitDTO implements Serializable {
+    private static final long serialVersionUID = 6L;
+
     /**
      * 姓名
      */

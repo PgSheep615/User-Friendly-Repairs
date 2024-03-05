@@ -21,6 +21,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderHistoryVO implements Serializable {
+    private static final long serialVersionUID = 6L;
+
     /**
      * 维修单ID，主键
      */
@@ -92,6 +94,11 @@ public class OrderHistoryVO implements Serializable {
      * 是否被接单，1表示已接单，0表示未接单
      */
     private Integer isAccepted;
+
+    /**
+     * 接单者ID
+     */
+    private Long accpetedUser;
 
     /**
      * 创建时间，自动填充当前时间

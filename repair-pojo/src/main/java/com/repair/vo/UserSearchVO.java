@@ -22,6 +22,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserSearchVO implements Serializable {
+    private static final long serialVersionUID = 6L;
+
     /**
      * 用户ID，主键
      */

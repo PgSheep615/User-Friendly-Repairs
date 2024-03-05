@@ -21,6 +21,8 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderCommunityVO implements Serializable {
+    private static final long serialVersionUID = 6L;
+
     /**
      * 维修单ID，主键
      */
@@ -65,6 +67,12 @@ public class OrderCommunityVO implements Serializable {
      * 是否被接单，1表示已接单，0表示未接单
      */
     private Integer isAccepted;
+
+    /**
+     * 接单者ID
+     */
+    private Long accpetedUser;
+
     /**
      * 订单修改时间，每次更新时自动更新为当前时间
      */

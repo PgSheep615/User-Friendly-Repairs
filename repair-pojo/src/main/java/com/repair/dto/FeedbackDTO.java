@@ -16,6 +16,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FeedbackDTO implements Serializable {
+    private static final long serialVersionUID = 6L;
+
 
     /**
      * 反馈问题情况

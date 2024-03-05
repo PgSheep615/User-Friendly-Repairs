@@ -18,6 +18,8 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class AdminAddDTO implements Serializable {
 
+    private static final long serialVersionUID = 6L;
+
     private Long userId;
 
     private String groupName;

@@ -14,6 +14,8 @@ import java.io.Serializable;
  */
 @Data
 public class OrderPageDTO implements Serializable {
+    private static final long serialVersionUID = 6L;
+
     //页码
     private Integer page;
 
