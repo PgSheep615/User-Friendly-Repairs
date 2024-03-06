@@ -1,9 +1,9 @@
 package com.repair.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fasterxml.jackson.databind.util.BeanUtil;
 import com.repair.constant.AdminCountConstant;
 import com.repair.constant.RedisConstant;
 import com.repair.context.BaseContext;
@@ -21,6 +21,7 @@ import com.repair.service.AdminService;
 import com.repair.util.RedisCache;
 import com.repair.vo.AdminSearchVO;
 import com.repair.vo.FeedbackSearchVO;
+import com.repair.vo.OrderAcceptedVO;
 import com.repair.vo.UserSearchVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,19 +30,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
-* @author LZB
-* @description 针对表【admin(管理员信息表)】的数据库操作Service实现
-* @createDate 2024-01-18 17:06:13
-*/
+ * @author LZB
+ * @description 针对表【admin(管理员信息表)】的数据库操作Service实现
+ * @createDate 2024-01-18 17:06:13
+ */
 @Service
 public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
-    implements AdminService{
+        implements AdminService {
 
     @Autowired
     private AdminMapper adminMapper;
@@ -57,23 +56,23 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
     /**
      * 修改reids的用户权限信息
      */
-    private void alterRedisPermissions(Long userId,String permissions){
+    private void alterRedisPermissions(Long userId, String permissions) {
         String key = RedisConstant.RedisGlobalKey + userId;
         LoginUser loginUser = redisCache.getCacheObject(key);
         redisCache.deleteObject(key);
         List<String> permissionsList = new ArrayList<>();
         permissionsList.add(permissions);
         loginUser.setPermissions(permissionsList);
-        redisCache.setCacheObject(key,loginUser,1, TimeUnit.DAYS);
+        redisCache.setCacheObject(key, loginUser, 1, TimeUnit.DAYS);
     }
 
-    private void add1RedisAdminCount(boolean add){
+    private void add1RedisAdminCount(boolean add) {
         Long adminCount = redisCache.getCacheObject(AdminCountConstant.AdminCount);
         redisCache.deleteObject(AdminCountConstant.AdminCount);
-        if(add){
-            redisCache.setCacheObject(AdminCountConstant.AdminCount,adminCount+1,1, TimeUnit.DAYS);
-        }else{
-            redisCache.setCacheObject(AdminCountConstant.AdminCount,adminCount-1,1, TimeUnit.DAYS);
+        if (add) {
+            redisCache.setCacheObject(AdminCountConstant.AdminCount, adminCount + 1, 1, TimeUnit.DAYS);
+        } else {
+            redisCache.setCacheObject(AdminCountConstant.AdminCount, adminCount - 1, 1, TimeUnit.DAYS);
 
         }
     }
@@ -81,6 +80,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
 
     /**
      * 添加管理员
+     *
      * @param adminAddDTO
      */
     @Transactional
@@ -91,30 +91,31 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
                 .updateTime(LocalDateTime.now())
                 .updateUser(BaseContext.getCurrentId())
                 .build();
-        BeanUtils.copyProperties(adminAddDTO,admin);
+        BeanUtils.copyProperties(adminAddDTO, admin);
         Long AdminId = adminMapper.selectByUserId(adminAddDTO.getUserId());
-        if (AdminId == null){
+        if (AdminId == null) {
             adminMapper.insert(admin);
-        }else{
+        } else {
             Admin exitsAdmin = new Admin();
-            BeanUtils.copyProperties(adminAddDTO,exitsAdmin);
+            BeanUtils.copyProperties(adminAddDTO, exitsAdmin);
             exitsAdmin.setId(AdminId);
             adminMapper.addMyAdminById(exitsAdmin);
         }
         add1RedisAdminCount(true);
-        alterRedisPermissions(adminAddDTO.getUserId(),"admin");
+        alterRedisPermissions(adminAddDTO.getUserId(), "admin");
     }
 
     /**
      * 分页查询所有管理员
+     *
      * @param adminSearchPageDTO
      * @return
      */
     public PageResult pageAdmin(AdminSearchPageDTO adminSearchPageDTO) {
-        Page<Admin> page = new Page<>(adminSearchPageDTO.getPage(),adminSearchPageDTO.getPageSize());
+        Page<Admin> page = new Page<>(adminSearchPageDTO.getPage(), adminSearchPageDTO.getPageSize());
         QueryWrapper<Admin> queryWrapper = new QueryWrapper<Admin>()
                 .orderByDesc("create_time");
-        adminMapper.selectPage(page,queryWrapper);
+        adminMapper.selectPage(page, queryWrapper);
         List<Admin> records = page.getRecords();
         List<AdminSearchVO> list = new ArrayList<>();
         for (Admin record : records) {
@@ -127,11 +128,12 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
             BeanUtils.copyProperties(record, adminSearchVO);
             list.add(adminSearchVO);
         }
-        return new PageResult(page.getTotal(),list);
+        return new PageResult(page.getTotal(), list);
     }
 
     /**
      * 删除管理员
+     *
      * @param id
      */
     @Transactional
@@ -143,24 +145,24 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
         adminMapper.updateById(admin);
         adminMapper.deleteById(id);
         add1RedisAdminCount(false);
-        alterRedisPermissions(admin.getUserId(),"user");
+        alterRedisPermissions(admin.getUserId(), "user");
     }
 
     /**
      * 分页查询所有反馈信息
+     *
      * @param feedbackSearchPageDTO
      * @return
      */
-    @Transactional
     public PageResult pageFeedback(FeedbackSearchPageDTO feedbackSearchPageDTO) {
         Page<Feedback> page = new Page<>(feedbackSearchPageDTO.getPage(), feedbackSearchPageDTO.getPageSize());
         QueryWrapper<Feedback> queryWrapper = new QueryWrapper<Feedback>()
                 .orderByDesc("create_time");
-        feedbackMapper.selectPage(page,queryWrapper);
+        feedbackMapper.selectPage(page, queryWrapper);
         List<Feedback> records = page.getRecords();
         List<FeedbackSearchVO> list = new ArrayList<>();
         for (Feedback record : records) {
-            User user =  userMapper.selectById(record.getUserId());
+            User user = userMapper.selectById(record.getUserId());
             FeedbackSearchVO feedbackSearchVO = FeedbackSearchVO.builder()
                     .name(user.getName())
                     .campus(user.getCampus())
@@ -173,6 +175,7 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
 
     /**
      * 接单
+     *
      * @param id
      */
     //TODO 标记接单的人
@@ -187,12 +190,13 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
 
     /**
      * 删除用户
+     *
      * @param id
      */
     @Transactional
     public void deleteUser(Long id) {
         Admin admin = adminMapper.selectOne(new QueryWrapper<Admin>().eq("user_id", id));
-        if(admin != null) {
+        if (admin != null) {
             deleteAdmin(admin.getId());
         }
         User user = userMapper.selectById(id);
@@ -205,17 +209,42 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
 
     /**
      * 分页查询所有用户
+     *
      * @return
      */
     public PageResult pageUser(UserSearchPageDTO userSearchPageDTO) {
         Page<User> page = new Page<>(userSearchPageDTO.getPage(), userSearchPageDTO.getPageSize());
-        userMapper.selectPage(page,null);
+        LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<User>()
+                .orderByDesc(User::getCreateTime);
+        userMapper.selectPage(page, lambdaQueryWrapper);
         List<User> records = page.getRecords();
         List<UserSearchVO> list = new ArrayList<>();
         for (User record : records) {
             UserSearchVO userSearchVO = new UserSearchVO();
             BeanUtils.copyProperties(record, userSearchVO);
             list.add(userSearchVO);
+        }
+        return new PageResult(page.getTotal(), list);
+    }
+
+    /**
+     * 按创建时间降序分页查询
+     *
+     * @param orderSearchPageDTO
+     * @return
+     */
+    public PageResult pageOrder(OrderSearchPageDTO orderSearchPageDTO) {
+        Page<RepairOrder> page = new Page<>(orderSearchPageDTO.getPage(), orderSearchPageDTO.getPageSize());
+        LambdaQueryWrapper<RepairOrder> lambdaQueryWrapper = new LambdaQueryWrapper<RepairOrder>()
+                .eq(RepairOrder::getAccpetedUser, BaseContext.getCurrentId())
+                .orderByDesc(RepairOrder::getCreateTime);
+        repairOrderMapper.selectPage(page, lambdaQueryWrapper);
+        List<RepairOrder> records = page.getRecords();
+        List<OrderAcceptedVO> list = new ArrayList<>();
+        for (RepairOrder record : records) {
+            OrderAcceptedVO orderAcceptedVO = new OrderAcceptedVO();
+            BeanUtils.copyProperties(record, orderAcceptedVO);
+            list.add(orderAcceptedVO);
         }
         return new PageResult(page.getTotal(), list);
     }

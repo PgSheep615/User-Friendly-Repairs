@@ -1,10 +1,7 @@
 package com.repair.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.repair.dto.AdminAddDTO;
-import com.repair.dto.AdminSearchPageDTO;
-import com.repair.dto.FeedbackSearchPageDTO;
-import com.repair.dto.UserSearchPageDTO;
+import com.repair.dto.*;
 import com.repair.entity.Admin;
 import com.repair.result.PageResult;
 
@@ -58,4 +55,6 @@ public interface AdminService extends IService<Admin> {
      * @return
      */
     PageResult pageUser(UserSearchPageDTO userSearchPageDTO);
+
+    PageResult pageOrder(OrderSearchPageDTO orderSearchPageDTO);
 }

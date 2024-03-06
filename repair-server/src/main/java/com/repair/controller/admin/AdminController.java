@@ -27,12 +27,11 @@ public class AdminController {
     private AdminService adminService;
 
 
-
     @PostMapping("/add")
     @ApiOperation("添加管理员")
     @PreAuthorize("hasAuthority('admin')")
-    public Result add(@RequestBody AdminAddDTO adminAddDTO){
-        log.info("添加管理员:{}",adminAddDTO);
+    public Result add(@RequestBody AdminAddDTO adminAddDTO) {
+        log.info("添加管理员:{}", adminAddDTO);
         adminService.add(adminAddDTO);
         return Result.success();
     }
@@ -40,8 +39,8 @@ public class AdminController {
     @GetMapping("/searchAdmin")
     @ApiOperation("查询所有管理员")
     @PreAuthorize("hasAuthority('admin')")
-    public Result<PageResult> pageAdmin(AdminSearchPageDTO adminSearchPageDTO){
-        log.info("查询所有管理员:{}",adminSearchPageDTO);
+    public Result<PageResult> pageAdmin(AdminSearchPageDTO adminSearchPageDTO) {
+        log.info("查询所有管理员:{}", adminSearchPageDTO);
         PageResult pageResult = adminService.pageAdmin(adminSearchPageDTO);
         return Result.success(pageResult);
     }
@@ -49,8 +48,8 @@ public class AdminController {
     @DeleteMapping("/deleteAdmin")
     @ApiOperation("删除管理员")
     @PreAuthorize("hasAuthority('admin')")
-    public Result deleteAdmin(@RequestParam("id") Long id){
-        log.info("删除管理员:{}",id);
+    public Result deleteAdmin(@RequestParam("id") Long id) {
+        log.info("删除管理员:{}", id);
         adminService.deleteAdmin(id);
         return Result.success();
     }
@@ -58,17 +57,17 @@ public class AdminController {
     @GetMapping("/feedback")
     @ApiOperation("查询所有反馈")
     @PreAuthorize("hasAuthority('admin')")
-    public Result<PageResult> pageFeedback(FeedbackSearchPageDTO feedbackSearchPageDTO){
-        log.info("查询所有反馈:{}",feedbackSearchPageDTO);
-        PageResult pageResult =  adminService.pageFeedback(feedbackSearchPageDTO);
+    public Result<PageResult> pageFeedback(FeedbackSearchPageDTO feedbackSearchPageDTO) {
+        log.info("查询所有反馈:{}", feedbackSearchPageDTO);
+        PageResult pageResult = adminService.pageFeedback(feedbackSearchPageDTO);
         return Result.success(pageResult);
     }
 
     @PutMapping("/accept")
     @ApiOperation("接单")
     @PreAuthorize("hasAuthority('admin')")
-    public Result accept(@RequestBody OrderAcceptDTO orderAcceptDTO){
-        log.info("接单{}",orderAcceptDTO);
+    public Result accept(@RequestBody OrderAcceptDTO orderAcceptDTO) {
+        log.info("接单{}", orderAcceptDTO);
         adminService.accept(orderAcceptDTO.getId());
         return Result.success();
     }
@@ -76,8 +75,8 @@ public class AdminController {
     @DeleteMapping("/deleteUser")
     @ApiOperation("删除用户")
     @PreAuthorize("hasAuthority('admin')")
-    public Result deleteUser(@RequestParam("id") Long id){
-        log.info("删除用户:{}",id);
+    public Result deleteUser(@RequestParam("id") Long id) {
+        log.info("删除用户:{}", id);
         adminService.deleteUser(id);
         return Result.success();
     }
@@ -85,13 +84,21 @@ public class AdminController {
     @GetMapping("/searchUser")
     @ApiOperation("分页查询所有用户")
     @PreAuthorize("hasAuthority('admin')")
-    public Result<PageResult> pageUser(UserSearchPageDTO userSearchPageDTO){
+    public Result<PageResult> pageUser(UserSearchPageDTO userSearchPageDTO) {
         log.info("分页查询所有用户");
-        PageResult pageResult =  adminService.pageUser(userSearchPageDTO);
+        PageResult pageResult = adminService.pageUser(userSearchPageDTO);
         return Result.success(pageResult);
     }
 
     //TODO 查询管理员所被分配的维修单
+    @GetMapping("/searchAccepted")
+    @ApiOperation("分页查询查询管理员所被分配的维修单")
+    @PreAuthorize("hasAuthority('admin')")
+    public Result<PageResult> pageOrder(OrderSearchPageDTO orderSearchPageDTO) {
+        log.info("分页查询查询管理员所被分配的维修单");
+        PageResult pageResult = adminService.pageOrder(orderSearchPageDTO);
+        return Result.success(pageResult);
+    }
 
 
 }

@@ -56,6 +56,7 @@ public class UserController {
 
         return Result.success(userLoginVO);
     }
+
     @PutMapping("/modify")
     @ApiOperation("修改用户信息")
     @PreAuthorize("hasAnyAuthority('user','admin')")
@@ -75,6 +76,7 @@ public class UserController {
         return Result.success();
     }
 
+
     @GetMapping("{id}")
     @ApiOperation("根据用户id获取用户信息")
     @Cacheable(cacheNames = "userCache",key = "#id")
@@ -85,4 +87,5 @@ public class UserController {
         BeanUtils.copyProperties(user,userSearchVO);
         return Result.success(userSearchVO);
     }
+
 }
