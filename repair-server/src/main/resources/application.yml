@@ -1,7 +1,7 @@
 # 服务器配置
 server:
   # 应用程序监听的端口号
-  port: 8080
+  port: 10010
 
 # Spring框架配置
 spring:
@@ -92,23 +92,23 @@ repair:
     appid: ${repair.wechat.appid}
     # 微信公众平台AppSecret
     secret: ${repair.wechat.secret}
-    # 微信支付商户号
-    mchid: ${repair.wechat.mchid}
-    # 商户API证书序列号
-    mchSerialNo: ${repair.wechat.mchSerialNo}
-    # 商户私钥文件路径
-    privateKeyFilePath: ${repair.wechat.privateKeyFilePath}
-    # 微信支付V3 API密钥
-    apiV3Key: ${repair.wechat.apiV3Key}
-    # 微信支付证书文件路径
-    weChatPayCertFilePath: ${repair.wechat.weChatPayCertFilePath}
-    # 微信支付通知回调URL
-    notifyUrl: ${repair.wechat.notifyUrl}
-    # 微信退款结果通知回调URL
-    refundNotifyUrl: ${repair.wechat.refundNotifyUrl}
-  shop:
-    # 店铺地址信息
-    address: ${repair.shop.address}
-  baidu:
-    # 百度地图API密钥
-    ak: ${repair.baidu.ak}
+#    # 微信支付商户号
+#    mchid: ${repair.wechat.mchid}
+#    # 商户API证书序列号
+#    mchSerialNo: ${repair.wechat.mchSerialNo}
+#    # 商户私钥文件路径
+#    privateKeyFilePath: ${repair.wechat.privateKeyFilePath}
+#    # 微信支付V3 API密钥
+#    apiV3Key: ${repair.wechat.apiV3Key}
+#    # 微信支付证书文件路径
+#    weChatPayCertFilePath: ${repair.wechat.weChatPayCertFilePath}
+#    # 微信支付通知回调URL
+#    notifyUrl: ${repair.wechat.notifyUrl}
+#    # 微信退款结果通知回调URL
+#    refundNotifyUrl: ${repair.wechat.refundNotifyUrl}
+#  shop:
+#    # 店铺地址信息
+#    address: ${repair.shop.address}
+#  baidu:
+#    # 百度地图API密钥
+#    ak: ${repair.baidu.ak}

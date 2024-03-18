@@ -26,7 +26,6 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
-
     @PostMapping("/add")
     @ApiOperation("添加管理员")
     @PreAuthorize("hasAuthority('admin')")
@@ -37,8 +36,8 @@ public class AdminController {
     }
 
     @GetMapping("/searchAdmin")
-    @ApiOperation("查询所有管理员")
-    @PreAuthorize("hasAuthority('admin')")
+    @ApiOperation("根据条件分页查询所有管理员")
+    @PreAuthorize("hasAnyAuthority('user','admin')")
     public Result<PageResult> pageAdmin(AdminSearchPageDTO adminSearchPageDTO) {
         log.info("查询所有管理员:{}", adminSearchPageDTO);
         PageResult pageResult = adminService.pageAdmin(adminSearchPageDTO);
@@ -99,6 +98,4 @@ public class AdminController {
         PageResult pageResult = adminService.pageOrder(orderSearchPageDTO);
         return Result.success(pageResult);
     }
-
-
 }

@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
 /**
@@ -76,5 +78,7 @@ public class OrderSubmitDTO implements Serializable {
     /**
      * 故障情况图片，可以存储图片路径或序列化后的数据
      */
+    @Pattern(regexp ="^(http|https):\\/\\/[^\\s\\/$.?#].[^\\s]*$",
+    message = "请输入正确的图片地址")
     private String faultImages;
 }

@@ -18,6 +18,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 /**
  * @author LZB
  * @date 2024/1/26
@@ -33,7 +35,8 @@ public class RepairOrderController {
 
     @PostMapping("/submit")
     @ApiOperation("提交维修单")
-    public Result submit(@RequestBody OrderSubmitDTO orderSubmitDTO){
+    @PreAuthorize("hasAnyAuthority('user','admin')")
+    public Result submit(@Valid  @RequestBody OrderSubmitDTO orderSubmitDTO){
         log.info("提交维修单{}",orderSubmitDTO);
         Long id = repairOrderService.submitAndAccepted(orderSubmitDTO);
         return Result.success(id);
@@ -41,6 +44,7 @@ public class RepairOrderController {
 
     @GetMapping("/community")
     @ApiOperation("获取社区列表")
+    @PreAuthorize("hasAnyAuthority('user','admin')")
     public Result<PageResult> allPage(OrderPageDTO orderPageDTO){
         log.info("获取社区列表{}",orderPageDTO);
         PageResult pageResult = repairOrderService.allPage(orderPageDTO);
@@ -48,7 +52,7 @@ public class RepairOrderController {
     }
     @GetMapping("/historyOrder")
     @ApiOperation("查询用户历史维修单")
-    @PreAuthorize("hasAuthority('user')")
+    @PreAuthorize("hasAnyAuthority('user','admin')")
     public Result<PageResult> userPage(OrderPageDTO orderPageDTO){
         log.info("查询用户历史维修单{}",orderPageDTO);
         PageResult pageResult = repairOrderService.userPage(orderPageDTO);
@@ -58,6 +62,7 @@ public class RepairOrderController {
     @PutMapping("/modify")
     @ApiOperation("根据维修单id修改维修单信息")
     @CacheEvict(cacheNames = "orderCache",key = "#orderModifyDTO.id")
+    @PreAuthorize("hasAnyAuthority('user','admin')")
     public Result modify(@RequestBody OrderModifyDTO orderModifyDTO){
         log.info("根据维修单id修改维修单信息{}",orderModifyDTO);
         repairOrderService.modify(orderModifyDTO);
@@ -67,6 +72,7 @@ public class RepairOrderController {
     @DeleteMapping("/delete")
     @ApiOperation("删除维修单")
     @CacheEvict(cacheNames = "orderCache",key = "#id")
+    @PreAuthorize("hasAnyAuthority('user','admin')")
     //TODO @RequestParam
     public Result delete(@RequestParam("id") Long id){
         log.info("删除维修单{}",id);
@@ -77,6 +83,7 @@ public class RepairOrderController {
     @GetMapping("{id}")
     @ApiOperation("根据id查询维修单详情")
     @Cacheable(cacheNames = "orderCache",key = "#id")
+    @PreAuthorize("hasAnyAuthority('user','admin')")
     public Result<OrderHistoryVO> getById(@PathVariable Long id){
         RepairOrder order = repairOrderService.getById(id);
         OrderHistoryVO orderHistoryVO = new OrderHistoryVO();

@@ -39,6 +39,11 @@ public class Admin implements Serializable {
     private String groupName;
 
     /**
+     * 分数
+     */
+    private Integer score;
+
+    /**
      * 创建时间，自动填充当前时间
      */
     private LocalDateTime createTime;

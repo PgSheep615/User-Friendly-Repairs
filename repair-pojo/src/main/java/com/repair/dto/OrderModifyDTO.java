@@ -81,4 +81,9 @@ public class OrderModifyDTO implements Serializable {
      * 地址（精确到宿舍号）
      */
     private String address;
+
+    /**
+     * 接单者ID
+     */
+    private Long accpetedUser;
 }

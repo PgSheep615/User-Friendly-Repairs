@@ -4,6 +4,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -22,5 +24,6 @@ public class FeedbackDTO implements Serializable {
     /**
      * 反馈问题情况
      */
+    @NotEmpty(message = "反馈问题情况不能为空")
     private String feedbackDescription;
 }

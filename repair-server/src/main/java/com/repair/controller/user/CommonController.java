@@ -37,7 +37,7 @@ public class CommonController {
         try {
             //原始文件名
             String originalFilename = file.getOriginalFilename();
-            //截取原始文件名的后缀   dfdfdf.png
+            //截取原始文件名的后缀   cat.png
             String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
             //构造新文件名称
             String objectName = UUID.randomUUID().toString() + extension;

@@ -23,8 +23,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,7 +55,6 @@ public class UserController {
 
         UserLoginVO userLoginVO = userService.wxLogin(userLoginDTO);
 
-
         return Result.success(userLoginVO);
     }
 
@@ -70,7 +71,7 @@ public class UserController {
     @PostMapping("/feedback")
     @ApiOperation("提交用户反馈")
     @PreAuthorize("hasAnyAuthority('user','admin')")
-    public Result feedback(@RequestBody FeedbackDTO feedbackDTO){
+    public Result feedback(@Valid  @RequestBody FeedbackDTO feedbackDTO){
         log.info("用户反馈{}",feedbackDTO);
         feedbackService.feedback(feedbackDTO);
         return Result.success();
@@ -87,5 +88,7 @@ public class UserController {
         BeanUtils.copyProperties(user,userSearchVO);
         return Result.success(userSearchVO);
     }
+
+
 
 }

@@ -109,6 +109,11 @@ public class User implements Serializable {
     @Version
     private Integer version;
 
+    /**
+     * 用户头像
+     */
+    private String image;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 6L;
 }

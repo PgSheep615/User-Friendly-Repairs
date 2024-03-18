@@ -23,6 +23,7 @@ import com.repair.vo.AdminSearchVO;
 import com.repair.vo.FeedbackSearchVO;
 import com.repair.vo.OrderAcceptedVO;
 import com.repair.vo.UserSearchVO;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -113,8 +114,11 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
      */
     public PageResult pageAdmin(AdminSearchPageDTO adminSearchPageDTO) {
         Page<Admin> page = new Page<>(adminSearchPageDTO.getPage(), adminSearchPageDTO.getPageSize());
-        QueryWrapper<Admin> queryWrapper = new QueryWrapper<Admin>()
-                .orderByDesc("create_time");
+        LambdaQueryWrapper<Admin> queryWrapper = new LambdaQueryWrapper<Admin>()
+                .orderByDesc(Admin::getCreateTime);
+        if (StringUtils.isNotBlank(adminSearchPageDTO.getGroupName())){
+            queryWrapper.eq(Admin::getGroupName,adminSearchPageDTO.getGroupName());
+        }
         adminMapper.selectPage(page, queryWrapper);
         List<Admin> records = page.getRecords();
         List<AdminSearchVO> list = new ArrayList<>();

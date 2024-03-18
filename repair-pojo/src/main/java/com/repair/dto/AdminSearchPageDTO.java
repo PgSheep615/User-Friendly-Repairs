@@ -25,4 +25,9 @@ public class AdminSearchPageDTO implements Serializable {
 
     //每页记录数
     private int pageSize;
+
+    //组名
+    private String groupName;
+
+
 }

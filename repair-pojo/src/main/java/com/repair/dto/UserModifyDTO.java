@@ -61,4 +61,11 @@ public class UserModifyDTO implements Serializable {
      */
     private String address;
 
+    /**
+     * 用户头像
+     */
+    private String image;
+
+
+
 }
