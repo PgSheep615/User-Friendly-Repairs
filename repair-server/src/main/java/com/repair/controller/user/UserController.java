@@ -42,7 +42,6 @@ public class UserController {
     @Autowired
     private FeedbackService feedbackService;
 
-
     /**
      * 微信用户登录
      * @param userLoginDTO

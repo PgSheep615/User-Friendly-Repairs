@@ -85,5 +85,5 @@ public class OrderModifyDTO implements Serializable {
     /**
      * 接单者ID
      */
-    private Long accpetedUser;
+    private Long adminId;
 }

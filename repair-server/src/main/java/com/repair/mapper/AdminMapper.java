@@ -16,8 +16,8 @@ import org.apache.ibatis.annotations.Update;
 */
 @Mapper
 public interface AdminMapper extends BaseMapper<Admin> {
-    @Select("select id from admin where user_id = #{userId}")
-    public Long selectByUserId(Long userId);
+    @Select("select * from admin where user_id = #{userId}")
+    public Admin selectByUserId(Long userId);
 
     @AutoFill(OperationType.UPDATE)
     @Update("update admin set is_deleted = 0 , group_name = #{groupName} where id = #{id}")

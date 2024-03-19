@@ -4,8 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.repair.constant.AdminScoreConstant;
 import com.repair.constant.JwtClaimsConstant;
 import com.repair.constant.RedisConstant;
+import com.repair.context.BaseContext;
 import com.repair.dto.LoginUser;
 import com.repair.dto.UserLoginDTO;
 import com.repair.dto.UserModifyDTO;
@@ -24,14 +26,13 @@ import com.repair.vo.UserLoginVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -59,6 +60,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Autowired
     private RedisCache redisCache;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
 
 
@@ -104,7 +108,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if(admin != null){
             isAdmin = 1;
             permissions.add("admin");
-
+            ZSetOperations zSetOperations = redisTemplate.opsForZSet();
+            Set range = zSetOperations.range(AdminScoreConstant.AdminScore, 0, -1);
+            if (!range.contains(user.getId()) ){
+                zSetOperations.add(AdminScoreConstant.AdminScore,user.getId(),admin.getScore());
+            }
         }else{
             permissions.add("user");
 

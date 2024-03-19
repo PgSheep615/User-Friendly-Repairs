@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.repair.constant.AdminCountConstant;
+import com.repair.constant.AdminScoreConstant;
 import com.repair.constant.RedisConstant;
 import com.repair.context.BaseContext;
 import com.repair.dto.*;
@@ -26,12 +27,16 @@ import com.repair.vo.UserSearchVO;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -53,6 +58,8 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
     private RepairOrderMapper repairOrderMapper;
     @Autowired
     private RedisCache redisCache;
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     /**
      * 修改reids的用户权限信息
@@ -63,7 +70,9 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
         redisCache.deleteObject(key);
         List<String> permissionsList = new ArrayList<>();
         permissionsList.add(permissions);
-        loginUser.setPermissions(permissionsList);
+        if (loginUser != null) {
+            loginUser.setPermissions(permissionsList);
+        }
         redisCache.setCacheObject(key, loginUser, 1, TimeUnit.DAYS);
     }
 
@@ -93,17 +102,27 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
                 .updateUser(BaseContext.getCurrentId())
                 .build();
         BeanUtils.copyProperties(adminAddDTO, admin);
-        Long AdminId = adminMapper.selectByUserId(adminAddDTO.getUserId());
-        if (AdminId == null) {
+        Admin adminTemp = adminMapper.selectByUserId(adminAddDTO.getUserId());
+
+        //add1RedisAdminCount(true);
+
+
+        ZSetOperations zSetOperations = redisTemplate.opsForZSet();
+        Set range = zSetOperations.range(AdminScoreConstant.AdminScore, 0, -1);
+        Optional first = range.stream().findFirst();
+        Double score = zSetOperations.score(AdminScoreConstant.AdminScore, first);
+        admin.setScore(score);
+
+        zSetOperations.add(AdminScoreConstant.AdminScore,adminAddDTO.getUserId(),score);
+        alterRedisPermissions(adminAddDTO.getUserId(), "admin");
+        if (adminTemp == null) {
             adminMapper.insert(admin);
         } else {
             Admin exitsAdmin = new Admin();
             BeanUtils.copyProperties(adminAddDTO, exitsAdmin);
-            exitsAdmin.setId(AdminId);
+            exitsAdmin.setId(adminTemp.getId());
             adminMapper.addMyAdminById(exitsAdmin);
         }
-        add1RedisAdminCount(true);
-        alterRedisPermissions(adminAddDTO.getUserId(), "admin");
     }
 
     /**
@@ -148,7 +167,9 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
         admin.setUpdateUser(BaseContext.getCurrentId());
         adminMapper.updateById(admin);
         adminMapper.deleteById(id);
-        add1RedisAdminCount(false);
+        //add1RedisAdminCount(false);
+        ZSetOperations zSetOperations = redisTemplate.opsForZSet();
+        zSetOperations.remove(AdminScoreConstant.AdminScore,admin.getUserId());
         alterRedisPermissions(admin.getUserId(), "user");
     }
 
@@ -183,12 +204,18 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
      * @param id
      */
     //TODO 标记接单的人
+    @Transactional
     public void accept(Long id) {
         RepairOrder repairOrder = repairOrderMapper.selectById(id);
         repairOrder.setIsAccepted(1);
         repairOrder.setUpdateUser(BaseContext.getCurrentId());
         repairOrder.setUpdateTime(LocalDateTime.now());
         repairOrder.setAccpetedUser(BaseContext.getCurrentId());
+
+        Admin admin = adminMapper.selectByUserId(BaseContext.getCurrentId());
+        admin.setScore(admin.getScore() + 1);
+        adminMapper.updateById(admin);
+
         repairOrderMapper.updateById(repairOrder);
     }
 

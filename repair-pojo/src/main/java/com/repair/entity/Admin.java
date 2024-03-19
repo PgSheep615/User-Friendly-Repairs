@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.jcp.xml.dsig.internal.dom.DOMUtils;
 
 /**
  * 管理员信息表
@@ -41,7 +42,7 @@ public class Admin implements Serializable {
     /**
      * 分数
      */
-    private Integer score;
+    private Double score;
 
     /**
      * 创建时间，自动填充当前时间
