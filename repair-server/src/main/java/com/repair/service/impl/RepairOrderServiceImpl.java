@@ -114,6 +114,7 @@ public class RepairOrderServiceImpl extends ServiceImpl<RepairOrderMapper, Repai
         //TODO 此处必须RepairOrder为泛型？
         Page<RepairOrder> page = new Page<>(orderPageDTO.getPage(), orderPageDTO.getPageSize());
         QueryWrapper<RepairOrder> queryWrapper = new QueryWrapper<RepairOrder>()
+                .orderByAsc("is_accepted")     //0 未接单
                 .orderByDesc("create_time");
         repairOrderMapper.selectPage(page,queryWrapper);
         return myPageUtil(page);

@@ -65,8 +65,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private RedisTemplate redisTemplate;
 
 
-
-
     /**
      *微信登陆
      * @param userLoginDTO
@@ -93,6 +91,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                     .createTime(LocalDateTime.now())
                     .updateTime(LocalDateTime.now())
                     .openid(openid)
+                    .image("http://skyshow.oss-cn-hangzhou.aliyuncs.com/b6a3ad80-0d3c-4da8-815a-264c93e40fdb.jpg")
                     .build();
             userMapper.insert(user);
         }
