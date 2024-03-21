@@ -83,7 +83,6 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
             redisCache.setCacheObject(AdminCountConstant.AdminCount, adminCount + 1, 1, TimeUnit.DAYS);
         } else {
             redisCache.setCacheObject(AdminCountConstant.AdminCount, adminCount - 1, 1, TimeUnit.DAYS);
-
         }
     }
 

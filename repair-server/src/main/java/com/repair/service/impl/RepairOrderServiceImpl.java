@@ -4,15 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.math.LongMath;
-import com.repair.constant.AdminCountConstant;
-import com.repair.constant.AdminScoreConstant;
-import com.repair.constant.RepairOrderAcceptedConstant;
+import com.repair.constant.*;
 import com.repair.context.BaseContext;
 import com.repair.dto.OrderModifyDTO;
 import com.repair.dto.OrderPageDTO;
 import com.repair.dto.OrderSubmitDTO;
 import com.repair.entity.Admin;
 import com.repair.entity.RepairOrder;
+import com.repair.entity.User;
 import com.repair.exception.RedisDifferentException;
 import com.repair.mapper.AdminMapper;
 import com.repair.mapper.RepairOrderMapper;
@@ -129,6 +128,7 @@ public class RepairOrderServiceImpl extends ServiceImpl<RepairOrderMapper, Repai
         Page<RepairOrder> page = new Page<>(orderPageDTO.getPage(), orderPageDTO.getPageSize());
         QueryWrapper<RepairOrder> queryWrapper = new QueryWrapper<RepairOrder>()
                 .eq("user_id",BaseContext.getCurrentId())
+                .orderByAsc("is_accepted")
                 .orderByDesc("create_time"); // 按 create_time 降序排序
         repairOrderMapper.selectPage(page,queryWrapper);
         List<RepairOrder> records = page.getRecords();
@@ -136,6 +136,13 @@ public class RepairOrderServiceImpl extends ServiceImpl<RepairOrderMapper, Repai
         for (RepairOrder record : records) {
             OrderHistoryVO orderHistoryVO = new OrderHistoryVO();
             BeanUtils.copyProperties(record, orderHistoryVO);
+            String accpetedName = redisCache.getCacheObject("userName:"+record.getAccpetedUser());
+            if( accpetedName == null && record.getAccpetedUser()!= null){
+                User user = userMapper.selectById(record.getAccpetedUser());
+                accpetedName = user.getName();
+                redisCache.setCacheObject("userName:"+record.getAccpetedUser(),user.getName());
+            }
+            orderHistoryVO.setAcceptedName(accpetedName);
             list.add(orderHistoryVO);
         }
         return new PageResult(page.getTotal(),list);
@@ -147,6 +154,21 @@ public class RepairOrderServiceImpl extends ServiceImpl<RepairOrderMapper, Repai
         for (RepairOrder record : records) {
             OrderCommunityVO orderCommunityVO = new OrderCommunityVO();
             BeanUtils.copyProperties(record, orderCommunityVO);
+            String accpetedName = redisCache.getCacheObject("userName:"+record.getAccpetedUser());
+            if( accpetedName == null && record.getAccpetedUser()!= null){
+                User user = userMapper.selectById(record.getAccpetedUser());
+                accpetedName = user.getName();
+                redisCache.setCacheObject("userName:"+record.getAccpetedUser(),user.getName());
+            }
+            orderCommunityVO.setAcceptedName(accpetedName);
+
+            /*Object cacheObject = redisCache.getCacheObject(RedisConstant.RedisGlobalKey);
+            //用户身份看不到私密信息
+            orderCommunityVO.setAddress(CatchErrorConstant.CatchError);
+            orderCommunityVO.setName(CatchErrorConstant.CatchError);*/
+
+
+            //
             list.add(orderCommunityVO);
         }
         return new PageResult(page.getTotal(),list);

@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * @author LZB
@@ -77,4 +76,9 @@ public class OrderCommunityVO implements Serializable {
      * 订单修改时间，每次更新时自动更新为当前时间
      */
     private LocalDateTime updateTime;
+
+    /**
+     * 接单者姓名
+     */
+    private String acceptedName;
 }

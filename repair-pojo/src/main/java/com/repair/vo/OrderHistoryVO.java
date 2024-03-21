@@ -101,6 +101,11 @@ public class OrderHistoryVO implements Serializable {
     private Long accpetedUser;
 
     /**
+     * 接单者姓名
+     */
+    private String acceptedName;
+
+    /**
      * 创建时间，自动填充当前时间
      */
     private LocalDateTime createTime;

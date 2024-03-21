@@ -48,6 +48,7 @@ public class RepairOrderController {
     public Result<PageResult> allPage(OrderPageDTO orderPageDTO){
         log.info("获取社区列表{}",orderPageDTO);
         PageResult pageResult = repairOrderService.allPage(orderPageDTO);
+
         return Result.success(pageResult);
     }
     @GetMapping("/historyOrder")
