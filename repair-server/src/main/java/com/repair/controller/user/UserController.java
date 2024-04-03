@@ -74,6 +74,7 @@ public class UserController {
         log.info("用户反馈{}",feedbackDTO);
         feedbackService.feedback(feedbackDTO);
         return Result.success();
+
     }
 
 

@@ -47,4 +47,6 @@ public interface RepairOrderService extends IService<RepairOrder> {
     void delete(Long id);
 
     void deleteById(Long id);
+
+    RepairOrder catchOrderById(Long id);
 }

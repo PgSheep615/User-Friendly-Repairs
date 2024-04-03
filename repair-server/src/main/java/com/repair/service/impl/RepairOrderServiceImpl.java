@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.math.LongMath;
 import com.repair.constant.*;
 import com.repair.context.BaseContext;
+import com.repair.dto.LoginUser;
 import com.repair.dto.OrderModifyDTO;
 import com.repair.dto.OrderPageDTO;
 import com.repair.dto.OrderSubmitDTO;
@@ -162,11 +163,13 @@ public class RepairOrderServiceImpl extends ServiceImpl<RepairOrderMapper, Repai
             }
             orderCommunityVO.setAcceptedName(accpetedName);
 
-            /*Object cacheObject = redisCache.getCacheObject(RedisConstant.RedisGlobalKey);
+            LoginUser loginUser = redisCache.getCacheObject(RedisConstant.RedisGlobalKey + BaseContext.getCurrentId());
             //用户身份看不到私密信息
-            orderCommunityVO.setAddress(CatchErrorConstant.CatchError);
-            orderCommunityVO.setName(CatchErrorConstant.CatchError);*/
-
+            List<String> permissions = loginUser.getPermissions();
+            if (permissions.contains("user")) {
+                orderCommunityVO.setAddress(CatchErrorConstant.CatchError);
+                orderCommunityVO.setName(CatchErrorConstant.CatchError);
+            }
 
             //
             list.add(orderCommunityVO);
@@ -208,6 +211,26 @@ public class RepairOrderServiceImpl extends ServiceImpl<RepairOrderMapper, Repai
     @Override
     public void deleteById(Long id) {
         repairOrderMapper.deleteById(id);
+    }
+
+    @Override
+    public RepairOrder catchOrderById(Long id) {
+        RepairOrder repairOrder = redisCache.getCacheObject("orderCache::" + id);
+        if (repairOrder == null){
+            repairOrder = repairOrderMapper.selectById(id);
+            redisCache.setCacheObject("orderCache::" + id,repairOrder);
+        }
+        LoginUser loginUser = redisCache.getCacheObject(RedisConstant.RedisGlobalKey + BaseContext.getCurrentId());
+        //用户身份看不到私密信息
+        List<String> permissions = loginUser.getPermissions();
+        if (permissions.contains("user") && (!repairOrder.getUserId().equals(BaseContext.getCurrentId()))){
+            repairOrder.setStudentId(CatchErrorConstant.CatchError);
+            repairOrder.setName(CatchErrorConstant.CatchError);
+            repairOrder.setPhoneNumber(CatchErrorConstant.CatchError);
+            repairOrder.setWechatId(CatchErrorConstant.CatchError);
+            repairOrder.setAddress(CatchErrorConstant.CatchError);
+        }
+        return repairOrder;
     }
 }
 

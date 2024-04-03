@@ -83,10 +83,11 @@ public class RepairOrderController {
 
     @GetMapping("{id}")
     @ApiOperation("根据id查询维修单详情")
-    @Cacheable(cacheNames = "orderCache",key = "#id")
+    //TODO 影响修改数据？？
+//    @Cacheable(cacheNames = "orderCache",key = "#id")
     @PreAuthorize("hasAnyAuthority('user','admin')")
     public Result<OrderHistoryVO> getById(@PathVariable Long id){
-        RepairOrder order = repairOrderService.getById(id);
+        RepairOrder order = repairOrderService.catchOrderById(id);
         OrderHistoryVO orderHistoryVO = new OrderHistoryVO();
         BeanUtils.copyProperties(order,orderHistoryVO);
         return Result.success(orderHistoryVO);
