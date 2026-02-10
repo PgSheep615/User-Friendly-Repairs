@@ -42,6 +42,9 @@ build/
 
 ### VS Code ###
 .vscode/
+openspec/
+
+.cursor
 
 
 # Temporary File

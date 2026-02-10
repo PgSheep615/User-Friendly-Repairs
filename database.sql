@@ -71,6 +71,7 @@ CREATE TABLE `repair_order`
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='维修单信息表';
 
+
 -- 创建反馈表（Feedback）
 CREATE TABLE `feedback`
 (
@@ -87,3 +88,27 @@ CREATE TABLE `feedback`
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4 COMMENT ='用户反馈信息表';
+
+-- 创建订单评价表（OrderRating）
+CREATE TABLE `order_rating`
+(
+    `id`          bigint     NOT NULL AUTO_INCREMENT COMMENT '评价ID，主键',
+    `order_id`    bigint     NOT NULL COMMENT '关联维修单ID（逻辑外键，关联repair_order.id）',
+    `user_id`     bigint     NOT NULL COMMENT '评价用户ID（逻辑外键，关联user.id）',
+    `admin_id`    bigint     DEFAULT NULL COMMENT '接单管理员ID（逻辑外键，关联user.id，从repair_order.accepted_user派生）',
+    `rating`     INT(11)     NOT NULL COMMENT '评分，1-5分',
+    `comment`     VARCHAR(500) DEFAULT NULL COMMENT '评价评论，可选，最大500字符',
+    `create_time` DATETIME             DEFAULT NULL COMMENT '创建时间，自动填充当前时间',
+    `update_time` DATETIME             DEFAULT NULL  COMMENT '修改时间，每次更新时自动更新为当前时间',
+    `create_user` bigint               DEFAULT NULL COMMENT '创建者ID',
+    `update_user` bigint               DEFAULT NULL COMMENT '修改者ID',
+    `is_deleted`  TINYINT(1)  NOT NULL DEFAULT 0 COMMENT '是否删除，1表示已删除，0表示未删除',
+    `delete_time` DATETIME             DEFAULT NULL COMMENT '删除时间',
+    `version`     INT(11)     NOT NULL DEFAULT 0 COMMENT '乐观锁版本号，用于并发控制',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `idx_order_user` (`order_id`, `user_id`) COMMENT '唯一索引，确保每个用户对每个订单只能评价一次',
+    KEY `idx_order_id` (`order_id`) COMMENT '订单ID索引，用于查询订单的评价',
+    KEY `idx_user_id` (`user_id`) COMMENT '用户ID索引，用于查询用户的评价',
+    KEY `idx_admin_id` (`admin_id`) COMMENT '管理员ID索引，用于查询管理员收到的评价'
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4 COMMENT ='订单评价信息表';

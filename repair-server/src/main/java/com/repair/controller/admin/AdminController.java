@@ -4,6 +4,7 @@ import com.repair.dto.*;
 import com.repair.result.PageResult;
 import com.repair.result.Result;
 import com.repair.service.AdminService;
+import com.repair.service.OrderRatingService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,8 @@ public class AdminController {
 
     @Autowired
     private AdminService adminService;
+    @Autowired
+    private OrderRatingService orderRatingService;
 
     @PostMapping("/add")
     @ApiOperation("添加管理员")
@@ -96,6 +99,15 @@ public class AdminController {
     public Result<PageResult> pageOrder(OrderSearchPageDTO orderSearchPageDTO) {
         log.info("分页查询查询管理员所被分配的维修单");
         PageResult pageResult = adminService.pageOrder(orderSearchPageDTO);
+        return Result.success(pageResult);
+    }
+
+    @GetMapping("/ratings")
+    @ApiOperation("分页查询管理员收到的评价")
+    @PreAuthorize("hasAuthority('admin')")
+    public Result<PageResult> pageRatings(OrderSearchPageDTO orderSearchPageDTO) {
+        log.info("分页查询管理员收到的评价");
+        PageResult pageResult = orderRatingService.getRatingsByAdmin(orderSearchPageDTO);
         return Result.success(pageResult);
     }
 }
